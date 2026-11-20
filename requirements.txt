@@ -1,0 +1,4 @@
+demoparser2>=0.42
+Flask>=3.0
+numpy>=1.26
+pandas>=2.0
