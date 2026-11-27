@@ -407,13 +407,13 @@ function drawTrend(r) {
       ctx.fillStyle = rounds[segStart].side === "CT" ? "rgba(77,141,255,0.07)" : "rgba(255,90,90,0.06)";
       ctx.fillRect(x0, padT, x1 - x0, ih);
       ctx.fillStyle = rounds[segStart].side === "CT" ? "rgba(141,185,255,0.65)" : "rgba(255,138,138,0.6)";
-      ctx.font = "11px sans-serif";
+      ctx.font = "11px Bahnschrift, sans-serif";
       ctx.fillText(rounds[segStart].side === "CT" ? "蓝CT" : "红T", x0 + 5, padT + 13);
       segStart = i;
     }
   }
   // 网格与刻度
-  ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.fillStyle = "#6b7889"; ctx.font = "10px sans-serif";
+  ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.fillStyle = "#6b7889"; ctx.font = "10px Bahnschrift, sans-serif";
   for (const v of [0, 25, 50, 75, 100]) {
     ctx.beginPath(); ctx.moveTo(padL, y(v)); ctx.lineTo(W - padR, y(v)); ctx.stroke();
     ctx.fillText(v, 6, y(v) + 3);
@@ -437,7 +437,7 @@ function drawTrend(r) {
     ctx.fillStyle = rd.won ? "#f0a13a" : "#55606e";
     ctx.beginPath(); ctx.arc(x(i), y(rd.scores.total), 4, 0, Math.PI * 2); ctx.fill();
     if (rd.won) { ctx.strokeStyle = "#0d1117"; ctx.lineWidth = 1.2; ctx.stroke(); }
-    ctx.fillStyle = "#7d8a9b"; ctx.font = "10px sans-serif"; ctx.textAlign = "center";
+    ctx.fillStyle = "#7d8a9b"; ctx.font = "10px Bahnschrift, sans-serif"; ctx.textAlign = "center";
     ctx.fillText(rd.round, x(i), H - 8); ctx.textAlign = "left";
   });
   // 点击跳转
@@ -472,8 +472,15 @@ async function selectRound(idx) {
 
   const resultTxt = rd.won == null ? "" : (rd.won ? " · 胜" : " · 负");
   const sc = rd.score_after || { T: 0, CT: 0 };
-  const labelTxt = rd.round_label ? ` · ${rd.round_label}` : "";
-  $("roundTitle").textContent = `第 ${rd.round} 回合（${rd.side === "CT" ? "蓝CT" : "红T"} 方）${resultTxt}${labelTxt} · 比分 ${sc.T}:${sc.CT}`;
+  $("roundNo").textContent = String(rd.round).padStart(2, "0");
+  $("roundTitle").textContent = `第 ${rd.round} 回合${resultTxt}`;
+  const lbl = $("roundLabel");
+  if (rd.round_label) { lbl.textContent = rd.round_label; lbl.classList.remove("hidden"); }
+  else lbl.classList.add("hidden");
+  // 迷你记分牌：该回合结束后的比分，你所在阵营带金边
+  const mine = (side) => side === rd.side ? " mine" : "";
+  $("roundScore").innerHTML =
+    `<span class="rs-s ct${mine("CT")}">CT</span><b>${sc.CT}</b><i>:</i><b>${sc.T}</b><span class="rs-s t${mine("T")}">T</span>`;
   $("youBadge").innerHTML = `你是 <i class="ptag ${rd.side === "CT" ? "ct" : "t"} me">${rd.side === "CT" ? "蓝CT" : "红T"}(你)</i>`;
   const v = $("roundVerdict");
   v.textContent = rd.verdict + " · " + rd.scores.total + "分";
