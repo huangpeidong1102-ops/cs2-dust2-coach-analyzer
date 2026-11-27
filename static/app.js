@@ -26,7 +26,7 @@ const state = {
 const $ = (id) => document.getElementById(id);
 const VERDICT_CLASS = { "优秀": "excellent", "良好": "good", "一般": "normal", "失误": "bad" };
 const CT_COLOR = "#4d8dff", T_COLOR = "#ff5a5a", ME_COLOR = "#ffd166";
-const AIM_COLOR = "#6fffe9", BULLET_COLOR = "#ffe66d";
+const AIM_COLOR = "#7de0c4", BULLET_COLOR = "#ffe66d";
 const CIRCLED = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
 const UTIL_STYLE = {
   smoke: ["#b8c0cc", "烟"], flash: ["#ffe66d", "闪"], he: ["#ff6b6b", "雷"],
@@ -294,7 +294,6 @@ function renderDash(r) {
   $("dashAvg").textContent = avg;
   const ring = $("scoreRing").getContext("2d");
   ring.clearRect(0, 0, 150, 150);
-  const col = avg >= 75 ? "#ffd166" : avg >= 60 ? "#6fffe9" : "#ff9f6e";
   ring.lineWidth = 6; ring.lineCap = "butt";
   ring.strokeStyle = "#1f262e";
   ring.beginPath(); ring.arc(75, 75, 68, 0, Math.PI * 2); ring.stroke();
@@ -1275,14 +1274,14 @@ function drawAimRose(pts, headPct, wallHugPct) {
   if (Math.max(...counts) > 0) {
     ctx.fillStyle = "rgba(9,16,24,.85)";
     ctx.beginPath(); ctx.arc(cx, cy, 26, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#6fffe9"; ctx.font = "bold 12px Microsoft YaHei";
+    ctx.fillStyle = AIM_COLOR; ctx.font = "bold 12px Microsoft YaHei";
     ctx.fillText("主看", cx, cy - 8);
     ctx.fillText(dirName(top * 15 + 7.5), cx, cy + 8);
   }
   ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
   ctx.fillStyle = "#8a97a8"; ctx.font = "11px Microsoft YaHei";
   ctx.fillText("方位与地图一致", 10, 16);
-  ctx.fillStyle = "#6fffe9"; ctx.font = "bold 12px Microsoft YaHei";
+  ctx.fillStyle = AIM_COLOR; ctx.font = "bold 12px Microsoft YaHei";
   ctx.fillText(`头线 ${headPct}% · 近墙 ${wallHugPct}%`, 10, H - 10);
   // 窗口末准星方向
   ctx.strokeStyle = "#ffd166"; ctx.lineWidth = 2;
