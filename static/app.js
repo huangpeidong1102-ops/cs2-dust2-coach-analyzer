@@ -406,13 +406,13 @@ function drawTrend(r) {
       ctx.fillStyle = rounds[segStart].side === "CT" ? "rgba(77,141,255,0.07)" : "rgba(255,90,90,0.06)";
       ctx.fillRect(x0, padT, x1 - x0, ih);
       ctx.fillStyle = rounds[segStart].side === "CT" ? "rgba(141,185,255,0.65)" : "rgba(255,138,138,0.6)";
-      ctx.font = "11px Bahnschrift, sans-serif";
+      ctx.font = "13px Bahnschrift, sans-serif";
       ctx.fillText(rounds[segStart].side === "CT" ? "蓝CT" : "红T", x0 + 5, padT + 13);
       segStart = i;
     }
   }
   // 网格与刻度
-  ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.fillStyle = "#6b7889"; ctx.font = "10px Bahnschrift, sans-serif";
+  ctx.strokeStyle = "rgba(255,255,255,0.06)"; ctx.fillStyle = "#6b7889"; ctx.font = "12px Bahnschrift, sans-serif";
   for (const v of [0, 25, 50, 75, 100]) {
     ctx.beginPath(); ctx.moveTo(padL, y(v)); ctx.lineTo(W - padR, y(v)); ctx.stroke();
     ctx.fillText(v, 6, y(v) + 3);
@@ -436,7 +436,7 @@ function drawTrend(r) {
     ctx.fillStyle = rd.won ? "#f0a13a" : "#55606e";
     ctx.beginPath(); ctx.arc(x(i), y(rd.scores.total), 4, 0, Math.PI * 2); ctx.fill();
     if (rd.won) { ctx.strokeStyle = "#0d1117"; ctx.lineWidth = 1.2; ctx.stroke(); }
-    ctx.fillStyle = "#7d8a9b"; ctx.font = "10px Bahnschrift, sans-serif"; ctx.textAlign = "center";
+    ctx.fillStyle = "#7d8a9b"; ctx.font = "12px Bahnschrift, sans-serif"; ctx.textAlign = "center";
     ctx.fillText(rd.round, x(i), H - 8); ctx.textAlign = "left";
   });
   // 点击跳转
@@ -970,7 +970,7 @@ function drawMap(tick) {
     ctx.fillStyle = color; ctx.fill();
     if (isMe) {
       ctx.strokeStyle = ME_COLOR; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = ME_COLOR; ctx.font = "bold 12px Microsoft YaHei";
+      ctx.fillStyle = ME_COLOR; ctx.font = "bold 14px Microsoft YaHei";
       ctx.shadowColor = "#000"; ctx.shadowBlur = 3;
       ctx.fillText("你", X - 6, Y - 12);
       ctx.shadowBlur = 0;
@@ -1262,7 +1262,7 @@ function drawAimRose(pts, headPct, wallHugPct) {
     ctx.fill();
   }
   // 八方位标签：与地图方位一致（右=地图右方）。
-  ctx.fillStyle = "#c2ccda"; ctx.font = "bold 13px Microsoft YaHei";
+  ctx.fillStyle = "#c2ccda"; ctx.font = "bold 15px Microsoft YaHei";
   ctx.textAlign = "center"; ctx.textBaseline = "middle";
   for (let k = 0; k < 8; k++) {
     const yaw = k * 45;
@@ -1274,14 +1274,14 @@ function drawAimRose(pts, headPct, wallHugPct) {
   if (Math.max(...counts) > 0) {
     ctx.fillStyle = "rgba(9,16,24,.85)";
     ctx.beginPath(); ctx.arc(cx, cy, 26, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = AIM_COLOR; ctx.font = "bold 12px Microsoft YaHei";
+    ctx.fillStyle = AIM_COLOR; ctx.font = "bold 14px Microsoft YaHei";
     ctx.fillText("主看", cx, cy - 8);
     ctx.fillText(dirName(top * 15 + 7.5), cx, cy + 8);
   }
   ctx.textAlign = "start"; ctx.textBaseline = "alphabetic";
-  ctx.fillStyle = "#8a97a8"; ctx.font = "11px Microsoft YaHei";
+  ctx.fillStyle = "#8a97a8"; ctx.font = "13px Microsoft YaHei";
   ctx.fillText("方位与地图一致", 10, 16);
-  ctx.fillStyle = AIM_COLOR; ctx.font = "bold 12px Microsoft YaHei";
+  ctx.fillStyle = AIM_COLOR; ctx.font = "bold 14px Microsoft YaHei";
   ctx.fillText(`头线 ${headPct}% · 近墙 ${wallHugPct}%`, 10, H - 10);
   // 窗口末准星方向
   ctx.strokeStyle = "#ffd166"; ctx.lineWidth = 2;
