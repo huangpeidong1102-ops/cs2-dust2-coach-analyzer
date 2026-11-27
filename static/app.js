@@ -292,7 +292,11 @@ function renderDash(r) {
   // 评分环
   const avg = ov.avg_score;
   $("dashAvg").textContent = avg;
-  const ring = $("scoreRing").getContext("2d");
+  const ringCv = $("scoreRing"), ring = ringCv.getContext("2d");
+  // 高分屏下按像素密度绘制，环线更清晰
+  const rdpr = Math.min(2, window.devicePixelRatio || 1);
+  ringCv.width = Math.round(150 * rdpr); ringCv.height = Math.round(150 * rdpr);
+  ring.setTransform(rdpr, 0, 0, rdpr, 0, 0);
   ring.clearRect(0, 0, 150, 150);
   ring.lineWidth = 6; ring.lineCap = "butt";
   ring.strokeStyle = "#1f262e";
@@ -390,7 +394,12 @@ function renderDash(r) {
 function drawTrend(r) {
   const cv = $("trendCanvas"), ctx = cv.getContext("2d");
   const rounds = r.rounds;
-  const W = cv.width, H = cv.height;
+  // 按容器实际宽度绘制（含高分屏），避免窄屏下整图被压缩导致文字过小
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const W = Math.max(320, cv.clientWidth || 1100), H = 170;
+  cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+  cv.style.height = H + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   const padL = 34, padR = 12, padT = 14, padB = 26;
   const iw = W - padL - padR, ih = H - padT - padB;
   ctx.clearRect(0, 0, W, H);
@@ -450,6 +459,14 @@ function drawTrend(r) {
   };
   cv.style.cursor = "pointer";
 }
+// 窗口尺寸变化时按新宽度重绘曲线
+let trendResizeTimer = null;
+window.addEventListener("resize", () => {
+  clearTimeout(trendResizeTimer);
+  trendResizeTimer = setTimeout(() => {
+    if (state.result && state.result.rounds && $("report") && !$("report").classList.contains("hidden")) drawTrend(state.result);
+  }, 150);
+});
 
 $("prevRound").addEventListener("click", () => stepRound(-1));
 $("nextRound").addEventListener("click", () => stepRound(1));
@@ -820,7 +837,7 @@ function drawMap(tick) {
   }
 
   const keyLabels = new Set(["匪家", "警家", "A包点", "B包点", "A大", "A小", "中路", "B洞", "中门"]);
-  ctx.font = "bold 14px Microsoft YaHei";
+  ctx.font = "bold 17px Microsoft YaHei";
   ctx.fillStyle = "rgba(225,234,244,0.82)";
   ctx.shadowColor = "#000"; ctx.shadowBlur = 4;
   for (const [name, p] of Object.entries(state.result.landmarks)) {
@@ -970,7 +987,7 @@ function drawMap(tick) {
     ctx.fillStyle = color; ctx.fill();
     if (isMe) {
       ctx.strokeStyle = ME_COLOR; ctx.lineWidth = 2.5; ctx.stroke();
-      ctx.fillStyle = ME_COLOR; ctx.font = "bold 14px Microsoft YaHei";
+      ctx.fillStyle = ME_COLOR; ctx.font = "bold 17px Microsoft YaHei";
       ctx.shadowColor = "#000"; ctx.shadowBlur = 3;
       ctx.fillText("你", X - 6, Y - 12);
       ctx.shadowBlur = 0;
