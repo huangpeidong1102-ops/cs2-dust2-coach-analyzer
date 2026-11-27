@@ -205,6 +205,16 @@ function renderReport() {
 
   const ov = r.overview;
   const ms = ov.match_score || { T: 0, CT: 0 };
+
+  // 顶部计分横幅：CT vs T 终局比分 + 你方胜负
+  $("heroCt").textContent = ms.CT;
+  $("heroT").textContent = ms.T;
+  const lastSide = r.rounds.length ? r.rounds[r.rounds.length - 1].side : "CT";
+  const myScore = ms[lastSide] || 0, oppScore = ms[lastSide === "CT" ? "T" : "CT"] || 0;
+  const heroRes = $("heroResult");
+  heroRes.textContent = myScore > oppScore ? "你方获胜" : myScore < oppScore ? "你方落败" : "平局";
+  heroRes.className = "hs-result " + (myScore > oppScore ? "win" : myScore < oppScore ? "lose" : "draw");
+
   const items = [
     ["大比分 T:CT", `${ms.T} : ${ms.CT}`],
     ["分析回合", ov.rounds], ["总击杀", ov.kills], ["总死亡", ov.deaths],
@@ -254,7 +264,7 @@ function renderReport() {
     const sc = rd.score_after || { T: 0, CT: 0 };
     const lbl = rd.round_label ? ` · ${rd.round_label}` : "";
     return `<div class="chip v-${cls} ${sideCls}" data-idx="${rd.round_index}" title="第${rd.round}回合 ${rd.side}方 ${rd.won == null ? "" : (rd.won ? "胜" : "负")}${lbl} · 比分 ${sc.T}:${sc.CT}">
-      ${rd.round}<span class="v">${initial} ${rd.side === "CT" ? "蓝" : "红"}</span><span class="sc">${sc.T}:${sc.CT}</span></div>`;
+      ${rd.round}<span class="v"><i class="vd vd-${cls}">${initial}</i>${rd.side === "CT" ? "蓝" : "红"}</span><span class="sc">${sc.T}:${sc.CT}</span></div>`;
   }).join("");
   document.querySelectorAll(".chip").forEach((c) =>
     c.addEventListener("click", () => {
@@ -285,11 +295,11 @@ function renderDash(r) {
   const ring = $("scoreRing").getContext("2d");
   ring.clearRect(0, 0, 150, 150);
   const col = avg >= 75 ? "#ffd166" : avg >= 60 ? "#6fffe9" : "#ff9f6e";
-  ring.lineWidth = 11; ring.lineCap = "butt";
-  ring.strokeStyle = "#232b35";
-  ring.beginPath(); ring.arc(75, 75, 60, 0, Math.PI * 2); ring.stroke();
-  ring.strokeStyle = col;
-  ring.beginPath(); ring.arc(75, 75, 60, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * avg / 100); ring.stroke();
+  ring.lineWidth = 6; ring.lineCap = "butt";
+  ring.strokeStyle = "#1f262e";
+  ring.beginPath(); ring.arc(75, 75, 68, 0, Math.PI * 2); ring.stroke();
+  ring.strokeStyle = "#f0a13a";
+  ring.beginPath(); ring.arc(75, 75, 68, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * Math.min(100, avg) / 100); ring.stroke();
 
   // 职业指标卡
   const cards = [
@@ -418,15 +428,15 @@ function drawTrend(r) {
   ctx.beginPath();
   ma.forEach((v, i) => { i ? ctx.lineTo(x(i), y(v)) : ctx.moveTo(x(i), y(v)); });
   ctx.stroke(); ctx.setLineDash([]);
-  // 总分金线
-  ctx.strokeStyle = "#ffd166"; ctx.lineWidth = 2.2; ctx.lineJoin = "round";
+  // 总分线
+  ctx.strokeStyle = "#f0a13a"; ctx.lineWidth = 2.2; ctx.lineJoin = "round";
   ctx.beginPath();
   rounds.forEach((rd, i) => { i ? ctx.lineTo(x(i), y(rd.scores.total)) : ctx.moveTo(x(i), y(rd.scores.total)); });
   ctx.stroke();
   rounds.forEach((rd, i) => {
-    ctx.fillStyle = rd.won ? "#ffd166" : "#5a6678";
+    ctx.fillStyle = rd.won ? "#f0a13a" : "#55606e";
     ctx.beginPath(); ctx.arc(x(i), y(rd.scores.total), 4, 0, Math.PI * 2); ctx.fill();
-    if (rd.won) { ctx.strokeStyle = "#0e1420"; ctx.lineWidth = 1.2; ctx.stroke(); }
+    if (rd.won) { ctx.strokeStyle = "#0d1117"; ctx.lineWidth = 1.2; ctx.stroke(); }
     ctx.fillStyle = "#7d8a9b"; ctx.font = "10px sans-serif"; ctx.textAlign = "center";
     ctx.fillText(rd.round, x(i), H - 8); ctx.textAlign = "left";
   });

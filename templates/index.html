@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CS2 Demo 分析器 · 沙二专项</title>
-<meta name="theme-color" content="#0f1216">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230f1216'/%3E%3Ccircle cx='32' cy='32' r='17' fill='none' stroke='%23f0a13a' stroke-width='5'/%3E%3Crect x='29' y='4' width='6' height='14' fill='%23f0a13a'/%3E%3Crect x='29' y='46' width='6' height='14' fill='%23f0a13a'/%3E%3Crect x='4' y='29' width='14' height='6' fill='%23f0a13a'/%3E%3Crect x='46' y='29' width='14' height='6' fill='%23f0a13a'/%3E%3C/svg%3E">
+<title>CS2 沙二教练复盘台</title>
+<meta name="theme-color" content="#0b0e12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230b0e12'/%3E%3Ccircle cx='32' cy='32' r='15' fill='none' stroke='%23f0a13a' stroke-width='4'/%3E%3Cpath d='M32 6v12M32 46v12M6 32h12M46 32h12' stroke='%23f0a13a' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <header>
   <div class="head-inner">
     <div class="brand">
-      <span class="logo-mark">✛</span>
+      <span class="logo-mark"></span>
       <div class="brand-text">
-        <h1>CS2 Demo 分析器</h1>
-        <span class="sub">DE_DUST2 · 选位 / 配合 / 决策 / 准星 逐回合复盘</span>
+        <h1>CS2 <em>教练复盘台</em></h1>
       </div>
+      <span class="brand-div"></span>
+      <span class="brand-map">DE_DUST2</span>
     </div>
     <div class="head-pills">
       <span class="hpill"><i class="pulse"></i>本地运行 · 数据不出本机</span>
-      <span class="hpill gold">COACH MODE</span>
     </div>
   </div>
 </header>
@@ -28,25 +28,26 @@
 <main>
   <!-- 上传与选人（分析后折叠成一条） -->
   <div id="setupArea">
-    <section class="card">
-      <h2>① 上传 Demo</h2>
+    <section class="card setup-card">
       <div id="dropzone" class="dropzone">
         <input type="file" id="fileInput" accept=".dem" hidden>
+        <div class="dz-icon"></div>
+        <h2>拖入 Demo，开始复盘</h2>
         <p>把 .dem 文件拖到这里，或</p>
-        <button class="btn" id="pickBtn">选择文件</button>
+        <button class="btn primary" id="pickBtn">选择文件</button>
         <p class="hint">仅支持 CS2（PBDEMS2）demo，热身环节会自动跳过</p>
       </div>
       <div id="parseStatus" class="status"></div>
     </section>
 
     <section class="card hidden" id="setupCard">
-      <h2>② 选择要分析的玩家（这是唯一需要认名字的地方）</h2>
+      <h2>选择要分析的玩家 <span class="mini-note">这是唯一需要认名字的地方</span></h2>
       <div class="match-info" id="matchInfo"></div>
       <div class="row">
         <select id="playerSelect"></select>
         <button class="btn primary" id="analyzeBtn">开始解析</button>
       </div>
-      <p class="hint">分析开始后，全场一律用颜色代号：<i class="ptag ct">蓝CT①</i> <i class="ptag t">红T②</i>，金圈 <i class="ptag ct me">蓝CT③(你)</i> 代表你。</p>
+      <p class="hint">分析开始后，全场一律用颜色代号：<i class="ptag ct">蓝CT①</i> <i class="ptag t">红T②</i>，金边 <i class="ptag ct me">蓝CT③(你)</i> 代表你。</p>
     </section>
   </div>
 
@@ -58,7 +59,13 @@
   <!-- 报告 -->
   <section id="report" class="hidden">
     <div class="card coach-dash">
-      <div class="dash-top">
+      <!-- 计分横幅 -->
+      <div class="hero">
+        <div class="hero-score">
+          <div class="hs-side ct"><span class="hs-tag">CT</span><b id="heroCt">0</b><span class="hs-sub">蓝方</span></div>
+          <div class="hs-mid"><span class="hs-map">FINAL</span><span class="hs-result" id="heroResult"></span></div>
+          <div class="hs-side t"><span class="hs-tag">T</span><b id="heroT">0</b><span class="hs-sub">红方</span></div>
+        </div>
         <div class="dash-id">
           <div class="dash-style-badges">
             <span class="style-badge" id="styleMain">—</span>
@@ -82,20 +89,20 @@
       </div>
 
       <div class="dash-sw">
-        <div class="sw-col good"><h3>✓ 教练认可的强项</h3><div id="strengthList"></div></div>
-        <div class="sw-col bad"><h3>✗ 优先解决的短板</h3><div id="weakList"></div></div>
+        <div class="sw-col good"><h3>教练认可的强项</h3><div id="strengthList"></div></div>
+        <div class="sw-col bad"><h3>优先解决的短板</h3><div id="weakList"></div></div>
       </div>
 
       <div class="dash-scout" id="scoutWrap">
         <div class="scout-col">
-          <h3>🎯 对手侦察 <span class="mini-note">像教练一样研究对面的习惯</span></h3>
+          <h3>对手侦察 <span class="mini-note">像教练一样研究对面的习惯</span></h3>
           <div id="scoutThreats"></div>
           <div id="scoutAdvice"></div>
         </div>
         <div class="scout-col">
-          <h3>🧭 进攻路线胜率 <span class="mini-note">T 侧开局 20 秒落位</span></h3>
+          <h3>进攻路线胜率 <span class="mini-note">T 侧开局 20 秒落位</span></h3>
           <div id="routeBars"></div>
-          <h3 class="mt">💪 心态韧性</h3>
+          <h3 class="mt">心态韧性</h3>
           <div id="momentumBox"></div>
         </div>
       </div>
@@ -103,7 +110,7 @@
       <div class="key-rounds" id="keyRounds"></div>
 
       <details class="plan-wrap" id="planWrap" open>
-        <summary>赛后训练清单（P0 立即改 · P1 重点练 · P2 长期保持）</summary>
+        <summary>赛后训练清单 <span class="mini-note">P0 立即改 · P1 重点练 · P2 长期保持</span></summary>
         <div id="coachPlan" class="coach-plan"></div>
       </details>
       <details class="raw-wrap">
@@ -142,7 +149,7 @@
       <div class="arena">
         <div class="map-col">
           <div class="map-controls">
-            <button class="btn small" id="playBtn">▶ 回放</button>
+            <button class="btn small primary" id="playBtn">▶ 回放</button>
             <select id="speedSel" class="speed-sel" title="回放速度">
               <option value="0.5">0.5×</option>
               <option value="1" selected>1×</option>
@@ -162,7 +169,7 @@
           <div class="legend">
             <span><i class="dot ct"></i>CT（蓝）</span>
             <span><i class="dot t"></i>T（红）</span>
-            <span><i class="dot me"></i>你（金圈）</span>
+            <span><i class="dot me"></i>你（金边）</span>
             <span><i class="mark x"></i>死亡点</span>
             <span><i class="mark bomb"></i>炸弹</span>
             <span><i class="mark util">烟</i>道具爆点</span>
@@ -227,15 +234,15 @@
             <h3>死亡复盘 / 存活说明</h3>
             <div id="deathReview"></div>
             <div class="comment-block good">
-              <h3>✓ 打得好的地方</h3>
+              <h3>打得好的地方</h3>
               <ul id="goodList"></ul>
             </div>
             <div class="comment-block issue">
-              <h3>✗ 存在的问题</h3>
+              <h3>存在的问题</h3>
               <ul id="issueList"></ul>
             </div>
             <div class="comment-block better">
-              <h3>→ 更优解</h3>
+              <h3>更优解</h3>
               <ul id="betterList"></ul>
             </div>
           </div>
@@ -245,7 +252,7 @@
   </section>
 </main>
 
-<footer class="foot"><b>CS2 沙二教练分析器</b> · 本地离线运行 · 上传的 demo 仅在本机解析 · 供训练复盘使用</footer>
+<footer class="foot"><b>CS2 沙二教练复盘台</b> · 本地离线运行 · 上传的 demo 仅在本机解析 · 供训练复盘使用</footer>
 
 <script src="/static/app.js"></script>
 </body>
