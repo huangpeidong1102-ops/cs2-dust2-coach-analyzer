@@ -285,8 +285,8 @@ function renderDash(r) {
   const ring = $("scoreRing").getContext("2d");
   ring.clearRect(0, 0, 150, 150);
   const col = avg >= 75 ? "#ffd166" : avg >= 60 ? "#6fffe9" : "#ff9f6e";
-  ring.lineWidth = 11; ring.lineCap = "round";
-  ring.strokeStyle = "#223044";
+  ring.lineWidth = 11; ring.lineCap = "butt";
+  ring.strokeStyle = "#232b35";
   ring.beginPath(); ring.arc(75, 75, 60, 0, Math.PI * 2); ring.stroke();
   ring.strokeStyle = col;
   ring.beginPath(); ring.arc(75, 75, 60, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * avg / 100); ring.stroke();
